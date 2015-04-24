@@ -53,7 +53,7 @@ class Text
   def self.commits_to_text(commit_data)
   end
 
-  def self.file_to_text(file_data)
+  def self.file_to_text(file_data, owner, repo_name)
     highlight = {}
     file_link = file_data[0]
     file_name = file_data[0].split('/').last
@@ -65,14 +65,22 @@ class Text
       file_text = "had many changes by "
     end
 
+    total_changes = 0
     file_data[1]['committers'].each do |k, v|
       file_text = file_text + " --> #{k} who did #{(v*100).to_f.round(2)}%."
     end
 
-    highlight['label'] = "#{file_name} got lots of attention on github"
+    highlight['label'] = "#{file_name} heavily (#{file_data[1]['changes']}) changed on Github in #{owner}/#{repo_name}"
     highlight['content'] = "#{file_name} #{file_text}"
-    highlight['why'] = "file was heavily changed in chosen time period"
+    highlight['why'] = "#{file_name} changed on Github"
+    highlight['upsert_key'] = self.file_to_key(file_data, owner, repo_name)
     highlight
+  end
+
+  def self.file_to_key(file_data, owner, repo_name)
+    t = Time.now.to_i
+    t2 = t - (t % 86400)
+    "GITHUB-FILES-#{file_data[0]}-#{t2}-owner-repo-name"
   end
 
   def self.user_to_text(user_data, repo_name)
@@ -92,7 +100,7 @@ class Text
 
     highlight['label'] = "#{username} Github contributions"
     highlight['content'] = "#{username} worked on: #{files_string} with "
-    highlight['why'] = "#{changes} changes across #{file_changes} files"
+    highlight['why'] = "User made #{changes} changes across #{file_changes} files on Github"
     highlight['upsert_key'] = Githubber.user_highlight_key(username)
     highlight
   end

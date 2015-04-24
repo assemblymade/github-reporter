@@ -1,11 +1,11 @@
 require_relative 'main'
 
 namespace :main do
-  desc "Push PR highlights to Titan"
+  desc "Push Assembly highlights to Titan"
   task :push_pr_highlights => :environment do
-    time_length = 3 #days
+    time_length = 5 #days
 
-    Main.push_pr_highlights('assemblymade', 'meta', time_length)
-  
+    Main.push_all('assemblymade', 'meta', time_length)
+
   end
 end
