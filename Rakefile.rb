@@ -2,7 +2,7 @@ require_relative 'main'
 
 namespace :main do
   desc "Push Assembly highlights to Titan"
-  task :push_pr_highlights do
+  task :push_highlights do
     time_length = 5 #days
 
     Main.push_all('assemblymade', 'meta', time_length)
