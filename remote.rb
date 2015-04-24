@@ -11,11 +11,20 @@ class Remote
   end
 
   def self.post(url, data)
+    data = data.to_json
     uri = URI(url)
-    res = Net::HTTP.post_form(uri, data)
+    https = Net::HTTP.new(uri.host,uri.port)
+    https.use_ssl = false
+    req = Net::HTTP::Post.new(uri.path, initheader = {'Content-Type' =>'application/json'})
+    req.body = data
+    res = https.request(req)
+    puts "Response #{res.code} #{res.message}: #{res.body}"
+
     return res
   end
 
-  
+
+
+
 
 end

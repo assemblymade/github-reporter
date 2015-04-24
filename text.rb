@@ -2,26 +2,26 @@ class Text
   def self.pr_to_text(pr_data)
     highlight = {}
     highlight['label'] = "Pull Request -- #{pr_data['title']}"
-    highlight['key'] = "#{pr_data['key']}"
     most_changed_files = self.get_most_changed_files_in_pr(pr_data).take(3)
-    highlight['content'] = "#{pr_data['stats']['total']} commits done by "
+    highlight['content'] = "###{pr_data['stats']['total']} total changes, by user"
 
     pr_data['committers'].each do |k, v|
-      highlight['content'] = highlight['content'] + "#{k} #{(v*100).to_f.round(2)}%<br/>"
+      highlight['content'] = highlight['content'] + "- #{k} #{(v*100).to_f.round(2)}%<br/>"
     end
-
+    highlight['content'] = highlight['content'] + "###Changed Files"
     most_changed_files.each do |a, b|
       highlight['content'] = highlight['content'] + "<br/>#{a} -- #{b}"
     end
 
-    highlight['content'] = highlight['content'] + "<br/>Files"
+    highlight['content'] = highlight['content'] + "###Commit Messages"
+
     pr_data['commit_messages'].each do |cm|
-      highlight['content'] = highlight['content'] + "<br/>cm"
+      highlight['content'] = highlight['content'] + " - #{cm}"
     end
 
-    highlight['why'] = "Merged Pull Request with above-average cumulative changes within the chosen time window"
+    highlight['why'] = "This Pull Request involved a lot of changes .... something something here"
 
-    highlight['id'] =
+    highlight['upsert_key'] = pr_data['key']
 
     highlight
   end

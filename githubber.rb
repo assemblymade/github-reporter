@@ -10,20 +10,20 @@ class Githubber
   require_relative 'pr'
 
   def self.all_commits_by_user_on_repo(user, repo_name, author=nil, since=nil, path=nil)
-    login_string = '#{self.auth_token}:x-oauth-basic'
+    login_string = "#{self.auth_token}:x-oauth-basic"
     github = Github.new basic_auth: login_string, auto_pagination: true, per_page: 100
     return github.repos.commits.all user, repo_name, author: author
   end
 
   def self.last_commit_on_repo(owner, repo_name)
-    login_string = '#{self.auth_token}:x-oauth-basic'
+    login_string = "#{self.auth_token}:x-oauth-basic"
     github = Github.new basic_auth: login_string, per_page: 1
     t = github.repos.commits.list owner, repo_name
     return t[0].sha
   end
 
   def self.list_collaborators_on_repo(repo_name)
-    login_string = '#{self.auth_token}:x-oauth-basic'
+    login_string = "#{self.auth_token}:x-oauth-basic"
     github = Github.new basic_auth: login_string
     return github.repos repo: repo_name
   end
@@ -37,7 +37,7 @@ class Githubber
   end
 
   def self.single_commit(repo_name, owner, sha)
-    login_string = '#{self.auth_token}:x-oauth-basic'
+    login_string = "#{self.auth_token}:x-oauth-basic"
     github = Github.new basic_auth: login_string
     return github.repos.commits.get user: owner, repo: repo_name, sha: sha
   end
@@ -85,7 +85,7 @@ class Githubber
   end
 
   def self.get_commits_inside_pr(repo_name, owner, pr_number)
-    login_string = '#{self.auth_token}:x-oauth-basic'
+    login_string = "#{self.auth_token}:x-oauth-basic"
     github = Github.new basic_auth: login_string
     return github.pull_requests.files repo_name, owner, pr_number
   end
@@ -277,7 +277,7 @@ class Githubber
   end
 
   def self.list_comments(user, repo_name)
-    login_string = '#{self.auth_token}:x-oauth-basic'
+    login_string = "#{self.auth_token}:x-oauth-basic"
     github = Github.new basic_auth: login_string, auto_pagination: true, per_page: 100, user: user, repo: repo_name
     github.repos.comments.list user, repo_name
   end
