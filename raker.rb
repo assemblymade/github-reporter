@@ -6,8 +6,7 @@ namespace :main do
     time_length = 3 #days
 
     Main.push_pr_highlights('assemblymade', 'meta', time_length)
+  
 
-
-    
   end
 end
