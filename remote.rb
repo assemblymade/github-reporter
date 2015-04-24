@@ -15,4 +15,7 @@ class Remote
     res = Net::HTTP.post_form(uri, data)
     return res
   end
+
+  
+
 end

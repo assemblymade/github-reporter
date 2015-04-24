@@ -2,7 +2,7 @@ class Text
   def self.pr_to_text(pr_data)
     highlight = {}
     highlight['label'] = "Pull Request -- #{pr_data['title']}"
-
+    highlight['key'] = "#{pr_data['key']}"
     most_changed_files = self.get_most_changed_files_in_pr(pr_data).take(3)
     highlight['content'] = "#{pr_data['stats']['total']} commits done by "
 
@@ -20,6 +20,9 @@ class Text
     end
 
     highlight['why'] = "Merged Pull Request with above-average cumulative changes within the chosen time window"
+
+    highlight['id'] =
+
     highlight
   end
 
@@ -101,5 +104,4 @@ class Text
     t['commits'] = highlights['commits'].map{|a| self.commits_to_text(a)}
     t
   end
-
 end

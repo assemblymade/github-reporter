@@ -4,7 +4,7 @@ class PR
   require_relative 'remote'
   require_relative 'githubber'
   require 'json'
-  
+
   def self.auth_token
     auth_token = ENV['GITHUB_AUTH_TOKEN']
   end
@@ -63,7 +63,7 @@ class PR
       puts "error getting commits inside PR #{number}"
     end
 
-
+    d['key'] = self.generate_pr_highlight_key(number, repo_name, user)
     d['created_at'] = Time.iso8601(pr.created_at).to_i
     d
   end
@@ -101,4 +101,12 @@ class PR
     end
     self.filter_prs(r, standard_deviations)
   end
+
+  def self.generate_pr_highlight_key(number, repo_name, owner)
+    t = Time.now.to_i
+    t2 = t - (t % 86400)
+    k = "PR:#{owner}:#{repo_name}:#{number}:#{t2}"
+    return k
+  end
+
 end
