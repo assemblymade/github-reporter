@@ -7,6 +7,5 @@ namespace :main do
 
     Main.push_pr_highlights('assemblymade', 'meta', time_length)
   
-
   end
 end
