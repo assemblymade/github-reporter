@@ -105,7 +105,7 @@ class PR
   def self.generate_pr_highlight_key(number, repo_name, owner)
     t = Time.now.to_i
     t2 = t - (t % 86400)
-    k = "PR-#{owner}-#{repo_name}-#{number}-#{t2}"
+    k = "GITHUB-PR-#{owner}-#{repo_name}-#{number}-#{t2}"
     return k
   end
 

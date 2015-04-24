@@ -1,16 +1,17 @@
 class Text
+  require_relative 'githubber'
   def self.pr_to_text(pr_data)
     highlight = {}
-    highlight['label'] = "Pull Request -- #{pr_data['title']}"
+    highlight['label'] = pr_data['title']
     most_changed_files = self.get_most_changed_files_in_pr(pr_data).take(3)
     highlight['content'] = "###{pr_data['stats']['total']} total changes, by user"
 
     pr_data['committers'].each do |k, v|
-      highlight['content'] = highlight['content'] + "- #{k} #{(v*100).to_f.round(2)}%<br/>"
+      highlight['content'] = highlight['content'] + "- #{k} #{(v*100).to_f.round(2)}%"
     end
     highlight['content'] = highlight['content'] + "###Changed Files"
     most_changed_files.each do |a, b|
-      highlight['content'] = highlight['content'] + "<br/>#{a} -- #{b}"
+      highlight['content'] = highlight['content'] + "- #{a} -- #{b}"
     end
 
     highlight['content'] = highlight['content'] + "###Commit Messages"
@@ -19,7 +20,7 @@ class Text
       highlight['content'] = highlight['content'] + " - #{cm}"
     end
 
-    highlight['why'] = "This Pull Request involved a lot of changes .... something something here"
+    highlight['why'] = "Github Pull Request with #{most_changed_files.count} files changed"
 
     highlight['upsert_key'] = pr_data['key']
 
@@ -74,24 +75,25 @@ class Text
     highlight
   end
 
-  def self.user_to_text(user_data)
+  def self.user_to_text(user_data, repo_name)
     highlight = {}
     username = user_data[0]
-    show_files = 3
+    show_files = 10
     changes = user_data[1]['total']
     file_changes = user_data[1]['files'].count
-    files_changed = user_data[1]['files'].take(show_files).map{|a, b| a}
+    files_changed = user_data[1]['files'].take(show_files).sort_by{|a, b| -b}
 
     files_string = ""
-    files_changed.each{|a| files_string = files_string + "<br/> #{a}"}
+    files_changed.each{|a, b| files_string = files_string + " - #{a} with #{b} changes"}
 
     if user_data[1]['files'].count > show_files
       files_string = files_string + " and #{file_changes - show_files} others"
     end
 
-    highlight['label'] = "#{username} made #{changes} changes"
-    highlight['content'] = "#{username} editted these files <br/> #{files_string}"
-    highlight['why'] = "User contributed many changes within chosen time period"
+    highlight['label'] = "#{username} Github contributions"
+    highlight['content'] = "#{username} worked on: #{files_string} with "
+    highlight['why'] = "#{changes} changes across #{file_changes} files"
+    highlight['upsert_key'] = Githubber.user_highlight_key(username)
     highlight
   end
 

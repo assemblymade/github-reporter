@@ -341,4 +341,11 @@ class Githubber
     history = self.all_history(user, repo_name, history_length)
     return self.highlights_from_history(history, user, repo_name, history_length)
   end
+
+  def self.user_highlight_key(user)
+    t = Time.now.to_i
+    t2 = t - (t % 86400)
+    k = "GITHUB-USER-#{user}-#{t2}"
+    k
+  end
 end
