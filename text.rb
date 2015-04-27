@@ -20,6 +20,8 @@ class Text
       highlight['content'] = highlight['content'] + " - #{cm}"
     end
 
+    highlight['content'] += "#####[Source Link](#{pr_data['url']})"
+
     if pr_data['state'] == "open"
       state = "Open"
     else
