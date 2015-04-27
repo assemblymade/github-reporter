@@ -79,7 +79,7 @@ class Text
 
   def self.file_to_key(file_data, owner, repo_name)
     t = Time.now.to_i
-    t2 = t - (t % 86400)
+    t2 = t - (t % 86400*7)
     "GITHUB-FILES-#{file_data[0]}-#{t2}-owner-repo-name"
   end
 
