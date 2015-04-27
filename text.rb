@@ -20,7 +20,12 @@ class Text
       highlight['content'] = highlight['content'] + " - #{cm}"
     end
 
-    highlight['why'] = "Github Pull Request with #{most_changed_files.count} files changed"
+    if pr_data['state'] == "open"
+      state = "Open"
+    else
+      state = "Closed"
+    end
+    highlight['why'] = "#{state} Github Pull Request with #{most_changed_files.count} files changed"
 
     highlight['upsert_key'] = pr_data['key']
 

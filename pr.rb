@@ -37,6 +37,7 @@ class PR
     d = {}
     d['title'] = pr['title']
     d['url'] = pr['html_url']
+    d['state'] = pr['state']
     sha = pr.merge_commit_sha
     if sha
       begin
