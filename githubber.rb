@@ -359,7 +359,7 @@ class Githubber
 
   def self.user_highlight_key(user)
     t = Time.now.to_i
-    t2 = t - (t % 86400*14)
+    t2 = t - (t % (86400*14))
     k = "GITHUB-USER-#{user}-#{t2}"
     k
   end
