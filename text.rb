@@ -67,7 +67,7 @@ class Text
     a += "\n#{filepath}"
 
     a += "\n####Commits"
-    commits = file_data[1].sort_by{|k, v| -v}
+    commits = file_data[1]['commits'].sort_by{|k, v| -v}
     commits.each do |c, d|
       a += "\n      - #{c}  #{d} changes"
     end
@@ -81,24 +81,13 @@ class Text
       a += "\n-######{committer_name}"
       a += "\n     -#{additions_count} additions, #{deletions_count} deletions, #{percent}% of total"
     end
+    a
   end
 
   def self.file_to_text(file_data, owner, repo_name)
     highlight = {}
     file_link = file_data[0]
     file_name = file_data[0]#.split('/').last
-    if file_data[1]['deletions'] > file_data[1]['additions'] * 2
-      file_text = "had #{file_data[1]['deletions']} deletions by "
-    elsif file_data[1]['additions'] > file_data[1]['deletions'] * 2
-      file_text = "had #{file_data[1]['additions']} additions by "
-    else
-      file_text = "had many changes by "
-    end
-
-    total_changes = 0
-    file_data[1]['committers'].each do |k, v|
-      file_text = file_text + "\n#{k} contributed #{(v*100).to_f.round(2)}%."
-    end
 
     top_committer = file_data[1]['committers'].sort_by{|a, b| -b}[0][0]
     committers_n = file_data[1]['committers'].count

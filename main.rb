@@ -19,37 +19,37 @@ class Main
     end
   end
 
-  def self.send_highlight(text_package)
-    url = "http://titan-api.herokuapp.com/changelogs/assembly/highlights"
-    puts "SENDING HIGHLIGHT #{text_package}"
+  def self.send_highlight(text_package, org_slug)
+    url = "http://titan-api.herokuapp.com/changelogs/#{org_slug}/highlights"
+    puts "SENDING HIGHLIGHT #{text_package} TO #{org_slug}"
     puts ""
     return Remote.post(url, text_package)
   end
 
-  def self.push_user_highlights(owner, repo_name, time_length)
+  def self.push_user_highlights(owner, repo_name, time_length, org_slug)
     commit_history = Githubber.commit_history(time_length, repo_name, owner)
     users = Githubber.top_users_in_history(commit_history['history'])
 
     users.each do |u|
       m = Text.user_to_text(u, repo_name)
-      self.send_highlight(m)
+      self.send_highlight(m, org_slug)
     end
   end
 
-  def self.push_files_highlights(owner, repo_name, time_length)
+  def self.push_files_highlights(owner, repo_name, time_length, org_slug)
     files = Githubber.highlights(owner, repo_name, time_length)['files']
 
     files.each do |file|
       file_text = Text.file_to_text(file, owner, repo_name)
-      self.send_highlight(file_text)
+      self.send_highlight(file_text, org_slug)
     end
   end
 
-  def self.push_all(owner, repo_name, time_length_days)
+  def self.push_all(owner, repo_name, time_length_days, org_slug)
     time_length = time_length_days * 86400
-    self.push_files_highlights(owner, repo_name, time_length)
-    self.push_user_highlights(owner, repo_name, time_length)
-    self.push_pr_highlights(owner, repo_name, time_length)
+    self.push_files_highlights(owner, repo_name, time_length, org_slug)
+    self.push_user_highlights(owner, repo_name, time_length, org_slug)
+    self.push_pr_highlights(owner, repo_name, time_length, org_slug)
   end
 
 end
