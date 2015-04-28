@@ -9,13 +9,13 @@ class Main
     return Text.text_from_highlights(a)
   end
 
-  def self.push_pr_highlights(owner, repo_name, time_length)
+  def self.push_pr_highlights(owner, repo_name, time_length, org_slug)
     standard_deviations = 0.3
     prs = PR.pull_requests(owner, repo_name, standard_deviations, time_limit=time_length)
     prs_text = prs.map{|a| Text.pr_to_text(a) }
 
     prs_text.each do |pr|
-      self.send_highlight(pr)
+      self.send_highlight(pr, org_slug)
     end
   end
 
