@@ -358,7 +358,6 @@ class Githubber
     return self.highlights_from_history(history, user, repo_name, history_length)
   end
 
-
   def self.user_highlight_key(user)
     t = Time.now.to_i
     t2 = t - (t % (86400*14))

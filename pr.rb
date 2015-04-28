@@ -54,7 +54,7 @@ class PR
     number = pr['number']
     begin
       commits_inside_pr = self.commits_on_pr(user, repo_name, number)
-      d['commit_messages'] = commits_inside_pr.map{|a| a['commit']['message']}
+      d['commit_messages'] = commits_inside_pr.map{|a| [a['commit']['message'], a['commit']['html_url']]}
       r = commits_inside_pr.map{|a| a['commit']['committer']['name'] }
       d['committers'] = {}
       r.each do |q|

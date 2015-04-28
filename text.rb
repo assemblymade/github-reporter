@@ -15,14 +15,14 @@ class Text
       a += "\n     #{f} -- #{g}"
     end
 
-    a += "\nCommits"
+    a += "\n###Commits"
     pr_data['commit_messages'].each do |cm|
-      a += "     \n#{cm}"
+      a += "\n     [#{cm[0]}](#{cm[1]})"
     end
 
     a += "\n###Top Contributors"
     pr_data['committers'].each do |k, v|
-      a += "\n     #{v.round(2)*100}  #{k}"
+      a += "\n     #{v.round(2)*100}%  #{k}"
     end
     a += "\n#####[Source Link](#{pr_data['url']})"
   end
