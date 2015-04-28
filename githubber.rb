@@ -153,6 +153,7 @@ class Githubber
     files = {}
     history_data.each do |h|
       committer = h['committer']
+      sha = h['sha']
       h['changes_by_file'].each do |f|
         if files.include?(f['filename'])
 
@@ -166,9 +167,16 @@ class Githubber
           files[f['filename']]['deletions'] += f['deletions']
           files[f['filename']]['additions'] += f['additions']
           files[f['filename']]['change_dates'] << h['commit_date']
+          if files[f['filename']]['commits'].has_key?(sha)
+            files[f['filename']]['commits'][sha] += f['changes']
+          else
+            files[f['filename']]['commits'][sha] = f['changes']
+          end
         else
           filedata = {}
           filedata['committers'] = {}
+          filedata['commits'] = {}
+          filedata['commits'][sha] = f['changes']
           filedata['committers'][committer] = f['changes']
           filedata['changes'] = f['changes']
           filedata['deletions'] = f['deletions']
@@ -294,6 +302,7 @@ class Githubber
   def self.top_users_in_history(history)
     users = {}
     history.each do |a|
+      sha = a['sha']
       user = a['committer']
       changes = a['total_changes']
       filechanges = a['changes_by_file']
@@ -309,15 +318,20 @@ class Githubber
         filename = q['filename']
         changes = q['changes']
         if users[user].include?(filename)
-          users[user]['files'][filename] += changes
+          users[user]['files'][filename] << [sha, changes, a['message']]
         else
-          users[user]['files'][filename] = changes
+          users[user]['files'][filename] = []
+          users[user]['files'][filename] << [sha, changes, a['message']]
         end
       end
-
     end
-    users.each{|a| a[1]['files'].sort_by{|k, v| -v}}
-    users.sort_by{|k, v| -v['total']}
+    users.each do |u|
+      u[1]['files'] = u[1]['files'].to_a
+      u[1]['files'].each do |f|
+        f[1] = f[1].sort_by{|a| -a[1]}
+      end
+    end
+    users.to_a.sort_by{|q| -q[1]['total']}
   end
 
   def self.all_history(user, repo_name, history_length)
@@ -345,7 +359,7 @@ class Githubber
 
   def self.user_highlight_key(user)
     t = Time.now.to_i
-    t2 = t - (t % 86400*7)
+    t2 = t - (t % 86400*14)
     k = "GITHUB-USER-#{user}-#{t2}"
     k
   end

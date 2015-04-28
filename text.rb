@@ -7,20 +7,20 @@ class Text
     highlight['content'] = "###{pr_data['stats']['total']} total changes, by user"
 
     pr_data['committers'].each do |k, v|
-      highlight['content'] = highlight['content'] + "- #{k} #{(v*100).to_f.round(2)}%"
+      highlight['content'] = highlight['content'] + "\n- #{k} #{(v*100).to_f.round(2)}%"
     end
     highlight['content'] = highlight['content'] + "###Changed Files"
     most_changed_files.each do |a, b|
-      highlight['content'] = highlight['content'] + "- #{a} -- #{b}"
+      highlight['content'] = highlight['content'] + "\n- #{a} -- #{b}"
     end
 
-    highlight['content'] = highlight['content'] + "###Commit Messages"
+    highlight['content'] = highlight['content'] + "\n###Commit Messages"
 
     pr_data['commit_messages'].each do |cm|
-      highlight['content'] = highlight['content'] + " - #{cm}"
+      highlight['content'] = highlight['content'] + "\n- #{cm}"
     end
 
-    highlight['content'] += "#####[Source Link](#{pr_data['url']})"
+    highlight['content'] += "\n#####[Source Link](#{pr_data['url']})"
 
     if pr_data['state'] == "open"
       state = "Open"
@@ -60,25 +60,52 @@ class Text
   def self.commits_to_text(commit_data)
   end
 
+  def self.file_content(file_data)
+    filename = file_data[0].split('/').last
+    filepath = file_data[0]
+    a = "###{filename} received lots of love"
+    a += "\n#{filepath}"
+
+    a += "\n####Commits"
+    commits = file_data[1].sort_by{|k, v| -v}
+    commits.each do |c, d|
+      a += "\n      - #{c}  #{d} changes"
+    end
+
+    a += "\n\n####Contributions by"
+    file_data[1]['committers'].each do |q|
+      committer_name = q[0]
+      additions_count = (file_data[1]['additions'] * q[1]).to_i
+      deletions_count = (file_data[1]['deletions'] * q[1]).to_i
+      percent =
+      a += "\n-######{committer_name}"
+      a += "\n     -#{additions_count} additions, #{deletions_count} deletions, #{percent}% of total"
+    end
+  end
+
   def self.file_to_text(file_data, owner, repo_name)
     highlight = {}
     file_link = file_data[0]
     file_name = file_data[0]#.split('/').last
     if file_data[1]['deletions'] > file_data[1]['additions'] * 2
-      file_text = "had tons of deletions by "
+      file_text = "had #{file_data[1]['deletions']} deletions by "
     elsif file_data[1]['additions'] > file_data[1]['deletions'] * 2
-      file_text = "had tons of additions by "
+      file_text = "had #{file_data[1]['additions']} additions by "
     else
       file_text = "had many changes by "
     end
 
     total_changes = 0
     file_data[1]['committers'].each do |k, v|
-      file_text = file_text + " --> #{k} who did #{(v*100).to_f.round(2)}%."
+      file_text = file_text + "\n#{k} contributed #{(v*100).to_f.round(2)}%."
     end
 
-    highlight['label'] = "#{file_name} (#{file_data[1]['changes']}) changes #{repo_name}"
-    highlight['content'] = "#{file_name} #{file_text}"
+    top_committer = file_data[1]['committers'].sort_by{|a, b| -b}[0][0]
+    committers_n = file_data[1]['committers'].count
+    and_others_text = committers_n > 1 ? " and #{committers_n - 1} others" : ""
+
+    highlight['label'] = "#{file_name} (#{file_data[1]['changes']}) changes in #{repo_name} by #{top_committer}#{and_others_text}"
+    highlight['content'] = self.file_content(file_data)
     highlight['why'] = "#{file_name} changed on Github"
     highlight['upsert_key'] = self.file_to_key(file_data, owner, repo_name)
     highlight
@@ -86,28 +113,48 @@ class Text
 
   def self.file_to_key(file_data, owner, repo_name)
     t = Time.now.to_i
-    t2 = t - (t % 86400*7)
+    t2 = t - (t % 86400*14)
     "GITHUB-FILES-#{file_data[0]}-#{t2}-owner-repo-name"
   end
 
-  def self.user_to_text(user_data, repo_name)
-    highlight = {}
+  def self.user_label(user_data, repo_name)
     username = user_data[0]
-    show_files = 10
-    changes = user_data[1]['total']
-    file_changes = user_data[1]['files'].count
-    files_changed = user_data[1]['files'].take(show_files).sort_by{|a, b| -b}
+    "Github activity by #{username} on #{repo_name}"
+  end
 
-    files_string = ""
-    files_changed.each{|a, b| files_string = files_string + " - #{a} with #{b} changes"}
+  def self.user_content(user_data, repo_name)
+    username = user_data[0]
+    a = "###{username} was active on #{repo_name}"
+    a += "\n###Files Changed"
+    user_data[1]['files'].each do |file|
+      sumchanges = 0
+      file[1].each{|q| sumchanges += q[1]}
+      a += "\n      -#{file[0]} : #{sumchanges} changes"
 
-    if user_data[1]['files'].count > show_files
-      files_string = files_string + " and #{file_changes - show_files} others"
+      file[1].each do |q|
+        a += "\n          -#{q[2]} : q[0]"
+      end
     end
+    a
+  end
 
-    highlight['label'] = "#{username} Github contributions"
-    highlight['content'] = "#{username} worked on: #{files_string} with "
-    highlight['why'] = "User made #{changes} changes across #{file_changes} files on Github"
+  def self.user_why(user_data, repo_name)
+    files_n = user_data[1]['files'].count
+    change_number = 0
+    user_data[1]['files'].each do |a|
+      a[1].each do |b|
+        change_number += b[1]
+      end
+    end
+    "User made #{change_number} changes across #{files_n} on #{repo_name}"
+  end
+
+  def self.user_to_text(user_data, repo_name)
+    username = user_data[0]
+    highlight = {}
+    highlight['label'] = self.user_label(user_data, repo_name)
+    highlight['content'] = self.user_content(user_data, repo_name)
+    highlight['why'] = self.user_why(user_data, repo_name)
     highlight['upsert_key'] = Githubber.user_highlight_key(username)
     highlight
   end
