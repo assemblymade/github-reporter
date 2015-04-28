@@ -156,7 +156,6 @@ class Githubber
       sha = h['sha']
       h['changes_by_file'].each do |f|
         if files.include?(f['filename'])
-
           if files[f['filename']]['committers'].include?(committer)
             files[f['filename']]['committers'][committer] += f['changes']
           else

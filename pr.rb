@@ -1,5 +1,4 @@
 class PR
-
   require 'github_api'
   require_relative 'remote'
   require_relative 'githubber'
@@ -54,7 +53,7 @@ class PR
     number = pr['number']
     begin
       commits_inside_pr = self.commits_on_pr(user, repo_name, number)
-      d['commit_messages'] = commits_inside_pr.map{|a| [a['commit']['message'], a['commit']['html_url']]}
+      d['commit_messages'] = commits_inside_pr.map{|a| [a['commit']['message'], a['commit']['url']]}
       r = commits_inside_pr.map{|a| a['commit']['committer']['name'] }
       d['committers'] = {}
       r.each do |q|

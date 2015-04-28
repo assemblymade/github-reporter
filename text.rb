@@ -9,7 +9,7 @@ class Text
     most_changed_files = self.get_most_changed_files_in_pr(pr_data).take(3)
 
     a = "###{pr_data['title']}"
-    a += "\n#{pr_data['state']}"
+    a += "\n#{pr_data['state']} pull request"
     a += "\n###Top Changes"
     most_changed_files.each do |f, g|
       a += "\n     #{f} -- #{g}"
@@ -17,14 +17,14 @@ class Text
 
     a += "\n###Commits"
     pr_data['commit_messages'].each do |cm|
-      a += "\n     [#{cm[0]}](#{cm[1]})"
+      a += "\n#####[#{cm[0]}](#{cm[1]})"
     end
 
     a += "\n###Top Contributors"
     pr_data['committers'].each do |k, v|
       a += "\n     #{v.round(2)*100}%  #{k}"
     end
-    a += "\n#####[Source Link](#{pr_data['url']})"
+    a += "\n#####[Source Link](#{pr_data['html_url']})"
   end
 
   def self.pr_to_text(pr_data)
@@ -46,11 +46,11 @@ class Text
   end
 
   def self.get_most_changed_files_in_pr(pr_data)
-    pr_data['files'].sort_by{|a, b| -b['changes']}
+    files = pr_data['files'].sort_by{|a, b| -b['changes']}
 
-    filenames = pr_data['files'].map{|a, b| a}.map{|a| a.split('/').last}
+    filenames = files.map{|a, b| a}.map{|a| a.split('/').last}
 
-    file_event_content = pr_data['files'].map do |a, b|
+    file_event_content = files.map do |a, b|
       if b['additions'] > b['deletions'] * 2
         event_text = "#{b['additions']} additions"
       elsif b['deletions'] > b['additions'] * 2
@@ -138,7 +138,7 @@ class Text
       file[1].each do |q|
         if q[2].length > 0
           q[2].sub("\n", "  ")
-          a += "\n          '#{q[2]}'"
+          a += "\n          #{q[2]}"
         end
       end
     end
