@@ -138,7 +138,7 @@ class Text
       file[1].each do |q|
         if q[2].length > 0
           q[2].sub("\n", "  ")
-          a += "\n          #{q[2]}"
+          a += "\n     #{q[2]}"
         end
       end
     end
