@@ -121,7 +121,7 @@ class Text
       a += "\n      -#{file[0]} : #{sumchanges} changes"
 
       file[1].each do |q|
-        a += "\n          -#{q[2]} : q[0]"
+        a += "\n          -#{q[2]} : by #{q[0]}"
       end
     end
     a
