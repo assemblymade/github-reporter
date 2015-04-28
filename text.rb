@@ -63,7 +63,7 @@ class Text
   def self.file_to_text(file_data, owner, repo_name)
     highlight = {}
     file_link = file_data[0]
-    file_name = file_data[0].split('/').last
+    file_name = file_data[0]#.split('/').last
     if file_data[1]['deletions'] > file_data[1]['additions'] * 2
       file_text = "had tons of deletions by "
     elsif file_data[1]['additions'] > file_data[1]['deletions'] * 2
@@ -77,7 +77,7 @@ class Text
       file_text = file_text + " --> #{k} who did #{(v*100).to_f.round(2)}%."
     end
 
-    highlight['label'] = "#{file_name} heavily (#{file_data[1]['changes']}) changed on Github in #{owner}/#{repo_name}"
+    highlight['label'] = "#{file_name} (#{file_data[1]['changes']}) changes #{repo_name}"
     highlight['content'] = "#{file_name} #{file_text}"
     highlight['why'] = "#{file_name} changed on Github"
     highlight['upsert_key'] = self.file_to_key(file_data, owner, repo_name)

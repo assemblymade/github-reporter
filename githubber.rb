@@ -331,7 +331,7 @@ class Githubber
     highlights = {}
     highlights['users'] = self.top_users_in_history(history['history'])
     highlights['prs'] = PR.pull_requests(user, repo_name, sd, history_length)
-    highlights['files'] = history['changed_files'].take(6)
+    highlights['files'] = history['changed_files'].take(3)
     highlights['commits'] = self.important_commits(history, sd)
     highlights['activity'] = self.activity_chart_from_history(history['history'])
     highlights
@@ -342,12 +342,6 @@ class Githubber
     return self.highlights_from_history(history, user, repo_name, history_length)
   end
 
-  def self.get_watchers(user, repo_name)
-
-  end
-
-  def self.get_stargazers(user, repo_name)
-  end
 
   def self.user_highlight_key(user)
     t = Time.now.to_i
