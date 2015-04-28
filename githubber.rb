@@ -170,13 +170,13 @@ class Githubber
           if files[f['filename']]['commits'].has_key?(sha)
             files[f['filename']]['commits'][sha][0] += f['changes']
           else
-            files[f['filename']]['commits'][sha] = [f['changes'], committer]
+            files[f['filename']]['commits'][sha] = [f['changes'], committer, h['message']]
           end
         else
           filedata = {}
           filedata['committers'] = {}
           filedata['commits'] = {}
-          filedata['commits'][sha] = [f['changes'], committer]
+          filedata['commits'][sha] = [f['changes'], committer, h['message']]
           filedata['committers'][committer] = f['changes']
           filedata['changes'] = f['changes']
           filedata['deletions'] = f['deletions']
@@ -308,10 +308,12 @@ class Githubber
       filechanges = a['changes_by_file']
       if users.include?(user)
         users[user]['total'] = users[user]['total'] + changes
+        users[user]['commits'] << sha
       else
         users[user] = {}
         users[user]['total'] = changes
         users[user]['files'] = {}
+        users[user]['commits'] = [sha]
       end
 
       filechanges.each do |q|

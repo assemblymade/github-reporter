@@ -69,8 +69,8 @@ class Text
     a += "\n####Commits"
     commits = file_data[1]['commits'].sort_by{|k, v| -v[0]}
     commits.each do |c, d|
-      commit_message = c.gsub("\"", "")
-      a += "\n      - #{c}  #{d[0]} changes by #{d[1]}"
+      commit_message = d[2].gsub("\"", "")
+      a += "\n      #{commit_message}  #{d[0]} changes by #{d[1]}"
     end
 
     a += "\n\n####Contributions by"
@@ -80,7 +80,7 @@ class Text
       deletions_count = (file_data[1]['deletions'] * q[1]).to_i
       percent = (q[1].round(2)*100).to_s
       a += "\n - ######{committer_name}"
-      a += "\n     - #{additions_count} additions, #{deletions_count} deletions, #{percent}% of total"
+      a += "\n     #{additions_count} additions, #{deletions_count} deletions, #{percent}% of total"
     end
     a += "\n\n"
     a
@@ -110,7 +110,8 @@ class Text
 
   def self.user_label(user_data, repo_name)
     username = user_data[0]
-    "Github activity by #{username} on #{repo_name}"
+    commits = user_data[1]['commits'].uniq.count
+    "#{username}: #{commits} commits on #{repo_name}"
   end
 
   def self.user_content(user_data, repo_name)
@@ -120,13 +121,13 @@ class Text
     user_data[1]['files'].each do |file|
       sumchanges = 0
       file[1].each{|q| sumchanges += q[1]}
-      a += "\n      - #{file[0]} : #{sumchanges} changes"
+      a += "\n      #{file[0]} : #{sumchanges} changes"
 
 
       file[1].each do |q|
         if q[2].length > 0
           q[2].sub("\n", "  ")
-          a += "\n          - '#{q[2]}'"
+          a += "\n          '#{q[2]}'"
         end
       end
     end
@@ -141,7 +142,7 @@ class Text
         change_number += b[1]
       end
     end
-    "User made #{change_number} changes across #{files_n} on #{repo_name}"
+    "User made #{change_number} changes across #{files_n} files on #{repo_name}"
   end
 
   def self.user_to_text(user_data, repo_name)
