@@ -5,7 +5,7 @@ namespace :main do
   task :push_highlights do
     time_length = 5 #days
 
-    Main.push_all('assemblymade', 'meta', time_length)
+    Main.push_all('assemblymade', 'meta', time_length, 'assembly')
 
   end
 end
