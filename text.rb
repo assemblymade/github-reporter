@@ -67,9 +67,10 @@ class Text
     a += "\n#{filepath}"
 
     a += "\n####Commits"
-    commits = file_data[1]['commits'].sort_by{|k, v| -v}
+    commits = file_data[1]['commits'].sort_by{|k, v| -v[0]}
     commits.each do |c, d|
-      a += "\n      - #{c}  #{d} changes"
+      commit_message = c.gsub("\"", "")
+      a += "\n      - #{c}  #{d[0]} changes by #{d[1]}"
     end
 
     a += "\n\n####Contributions by"
@@ -77,7 +78,7 @@ class Text
       committer_name = q[0]
       additions_count = (file_data[1]['additions'] * q[1]).to_i
       deletions_count = (file_data[1]['deletions'] * q[1]).to_i
-      percent = (q[1]*100.round(2)).to_s
+      percent = (q[1].round(2)*100).to_s
       a += "\n - ######{committer_name}"
       a += "\n     - #{additions_count} additions, #{deletions_count} deletions, #{percent}% of total"
     end

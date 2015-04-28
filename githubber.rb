@@ -168,15 +168,15 @@ class Githubber
           files[f['filename']]['additions'] += f['additions']
           files[f['filename']]['change_dates'] << h['commit_date']
           if files[f['filename']]['commits'].has_key?(sha)
-            files[f['filename']]['commits'][sha] += f['changes']
+            files[f['filename']]['commits'][sha][0] += f['changes']
           else
-            files[f['filename']]['commits'][sha] = f['changes']
+            files[f['filename']]['commits'][sha] = [f['changes'], committer]
           end
         else
           filedata = {}
           filedata['committers'] = {}
           filedata['commits'] = {}
-          filedata['commits'][sha] = f['changes']
+          filedata['commits'][sha] = [f['changes'], committer]
           filedata['committers'][committer] = f['changes']
           filedata['changes'] = f['changes']
           filedata['deletions'] = f['deletions']
@@ -318,10 +318,10 @@ class Githubber
         filename = q['filename']
         changes = q['changes']
         if users[user].include?(filename)
-          users[user]['files'][filename] << [sha, changes, a['message']]
+          users[user]['files'][filename] << [sha, changes, a['message'], a['committer']]
         else
           users[user]['files'][filename] = []
-          users[user]['files'][filename] << [sha, changes, a['message']]
+          users[user]['files'][filename] << [sha, changes, a['message'], a['committer']]
         end
       end
     end
