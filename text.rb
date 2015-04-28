@@ -1,10 +1,25 @@
 class Text
   require_relative 'githubber'
+
+  def self.pr_label(pr_data)
+    pr_data['title']
+  end
+
+  def self.pr_content(pr_data)
+    most_changed_files = self.get_most_changed_files_in_pr(pr_data).take(3)
+
+    a = ""
+    
+
+  end
+
   def self.pr_to_text(pr_data)
     highlight = {}
-    highlight['label'] = pr_data['title']
-    most_changed_files = self.get_most_changed_files_in_pr(pr_data).take(3)
-    highlight['content'] = "###{pr_data['stats']['total']} total changes, by user"
+    highlight['label'] = self.pr_label(pr_data)
+
+    highlight['content'] = self.pr_content(pr_data)
+
+    "###{pr_data['stats']['total']} total changes, by user"
 
     pr_data['committers'].each do |k, v|
       highlight['content'] = highlight['content'] + "\n- #{k} #{(v*100).to_f.round(2)}%"
@@ -70,7 +85,7 @@ class Text
     commits = file_data[1]['commits'].sort_by{|k, v| -v[0]}
     commits.each do |c, d|
       commit_message = d[2].gsub("\"", "")
-      a += "\n      #{commit_message}  #{d[0]} changes by #{d[1]}"
+      a += "\n      #{commit_message}:  #{d[0]} changes by #{d[1]}"
     end
 
     a += "\n\n####Contributions by"
