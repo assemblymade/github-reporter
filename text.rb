@@ -8,9 +8,23 @@ class Text
   def self.pr_content(pr_data)
     most_changed_files = self.get_most_changed_files_in_pr(pr_data).take(3)
 
-    a = ""
-    
+    a = "###{pr_data['title']}"
+    a += "\n#{pr_data['state']}"
+    a += "\n###Top Changes"
+    most_changed_files.each do |f, g|
+      a += "\n     #{f} -- #{g}"
+    end
 
+    a += "\nCommits"
+    pr_data['commit_messages'].each do |cm|
+      a += "     \n#{cm}"
+    end
+
+    a += "\n###Top Contributors"
+    pr_data['committers'].each do |k, v|
+      a += "\n     #{v.round(2)*100}  #{k}"
+    end
+    a += "\n#####[Source Link](#{pr_data['url']})"
   end
 
   def self.pr_to_text(pr_data)
@@ -18,24 +32,6 @@ class Text
     highlight['label'] = self.pr_label(pr_data)
 
     highlight['content'] = self.pr_content(pr_data)
-
-    "###{pr_data['stats']['total']} total changes, by user"
-
-    pr_data['committers'].each do |k, v|
-      highlight['content'] = highlight['content'] + "\n- #{k} #{(v*100).to_f.round(2)}%"
-    end
-    highlight['content'] = highlight['content'] + "###Changed Files"
-    most_changed_files.each do |a, b|
-      highlight['content'] = highlight['content'] + "\n- #{a} -- #{b}"
-    end
-
-    highlight['content'] = highlight['content'] + "\n###Commit Messages"
-
-    pr_data['commit_messages'].each do |cm|
-      highlight['content'] = highlight['content'] + "\n- #{cm}"
-    end
-
-    highlight['content'] += "\n#####[Source Link](#{pr_data['url']})"
 
     if pr_data['state'] == "open"
       state = "Open"
