@@ -118,10 +118,14 @@ class Text
     user_data[1]['files'].each do |file|
       sumchanges = 0
       file[1].each{|q| sumchanges += q[1]}
-      a += "\n      -#{file[0]} : #{sumchanges} changes"
+      a += "\n      - #{file[0]} : #{sumchanges} changes"
+
 
       file[1].each do |q|
-        a += "\n          -#{q[2]} : by #{q[0]}"
+        if q[2].length > 0
+          q[2].sub("\n", "  ")
+          a += "\n          - '#{q[2]}'"
+        end
       end
     end
     a
