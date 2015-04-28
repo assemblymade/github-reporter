@@ -63,7 +63,7 @@ class Text
   def self.file_content(file_data)
     filename = file_data[0].split('/').last
     filepath = file_data[0]
-    a = "###{filename} received lots of love"
+    a = "###{filename}"
     a += "\n#{filepath}"
 
     a += "\n####Commits"
@@ -77,10 +77,11 @@ class Text
       committer_name = q[0]
       additions_count = (file_data[1]['additions'] * q[1]).to_i
       deletions_count = (file_data[1]['deletions'] * q[1]).to_i
-      percent =
-      a += "\n-######{committer_name}"
-      a += "\n     -#{additions_count} additions, #{deletions_count} deletions, #{percent}% of total"
+      percent = (q[1]*100.round(2)).to_s
+      a += "\n - ######{committer_name}"
+      a += "\n     - #{additions_count} additions, #{deletions_count} deletions, #{percent}% of total"
     end
+    a += "\n\n"
     a
   end
 
