@@ -38,7 +38,7 @@ class Text
     else
       state = "Closed"
     end
-    highlight['why'] = "#{state} Github Pull Request with #{most_changed_files.count} files changed"
+    highlight['why'] = "#{state} Github Pull Request with #{pr_data['files'].count} files changed"
 
     highlight['upsert_key'] = pr_data['key']
 
