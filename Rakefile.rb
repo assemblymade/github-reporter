@@ -3,10 +3,17 @@ require_relative 'main'
 namespace :main do
   desc "Push Assembly highlights to Titan"
   task :push_highlights do
-    time_length = 7 #days
+    time_length = 3 #days
 
-    Main.push_all('assemblymade', 'meta', time_length, 'assembly')
-    Main.push_all('assemblymade', 'github-reporter', time_length, 'titan')
-    Main.push_all('assemblymade', 'trello-reporter', time_length, 'titan')
+    repos = ['github-reporter',
+            'trello-reporter',
+            'slack-reporter',
+            'titan-web',
+            'titan-ios',
+            'titan-api'
+            ]
+    repos.each do |r|
+      Main.push_all('assemblymade', r, time_length, 'assembly')
+    end
   end
 end

@@ -58,7 +58,7 @@ class Main
     #self.push_files_highlights(owner, repo_name, time_length, org_slug, data)
     #self.push_user_highlights(owner, repo_name, time_length, org_slug)
     self.push_pr_highlights(owner, repo_name, time_length, org_slug)
-    self.push_commits_highlights(owner, repo_name, time_length, 4, org_slug, data)
+    self.push_commits_highlights(owner, repo_name, time_length, 3, org_slug, data)
   end
 
 end
