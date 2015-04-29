@@ -88,18 +88,28 @@ class PR
     prs.select{|a| a.has_key?('stats') }.select{|a| (a['stats']['total'] - average_changes_per_pr) > m  }.sort_by{|q| -q['stats']['total']}
   end
 
-  def self.pull_requests(user, repo_name, standard_deviations, time_limit=nil)
+  def self.pull_requests(user, repo_name, standard_deviations=nil, time_limit=nil)
     prs = self.all_pull_requests(user, repo_name)
     if time_limit
       timenow = Time.now.to_i
-      prs = prs.select{|a| a.closed_at}.select{|a| timenow - Time.iso8601(a.closed_at).to_i < time_limit}
+      prs = prs.select do |a|
+        if a.closed_at
+          timenow - Time.iso8601(a.closed_at).to_i < time_limit
+        else
+          true
+        end
+      end
     end
     r = []
 
     prs.each do |pr|
       r << self.format_pr(user, repo_name, pr)
     end
-    self.filter_prs(r, standard_deviations)
+    if standard_deviations
+      self.filter_prs(r, standard_deviations)
+    else
+      r
+    end
   end
 
   def self.generate_pr_highlight_key(number, repo_name, owner)
