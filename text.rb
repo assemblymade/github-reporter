@@ -33,9 +33,9 @@ class Text
     else
       d=nil
     end
-    a = "#{commit_data['message']} committed by #{commit_data['committer']}"
+    a = "#{commit_data['committer'].capitalize} committed '#{commit_data['message']}' in #{repo_name}"
     if d
-      a += " on #{d}"
+      a += "  #{d}"
     end
     highlight = {}
     highlight['content'] = a
@@ -72,41 +72,20 @@ class Text
 
   def self.user_content(user_data, repo_name)
     username = user_data[0]
-    a = "###{username} was active on #{repo_name}"
-    a += "\n###Files Changed"
-    user_data[1]['files'].each do |file|
-      sumchanges = 0
-      file[1].each{|q| sumchanges += q[1]}
-      a += "\n      #{file[0]} : #{sumchanges} changes"
-
-
-      file[1].each do |q|
-        if q[2].length > 0
-          q[2].sub("\n", "  ")
-          a += "\n     #{q[2]}"
-        end
-      end
+    files = user_data[1]['files'].sort_by{|e| s=0;e[1].each{|t| s=s+t[1]}; -s}
+    if files.count > 2
+      a = "#{username.capitalize} changed #{files[0][0].split('/').last}, #{files[1][0].split('/').last}, and #{files.count-2} others"
+    elsif files.count == 1
+      a = "#{username.capitalize} changed #{files[0][0].split('/').last}"
     end
     a
-  end
-
-  def self.user_why(user_data, repo_name)
-    files_n = user_data[1]['files'].count
-    change_number = 0
-    user_data[1]['files'].each do |a|
-      a[1].each do |b|
-        change_number += b[1]
-      end
-    end
-    "User made #{change_number} changes across #{files_n} files on #{repo_name}"
   end
 
   def self.user_to_text(user_data, repo_name)
     username = user_data[0]
     highlight = {}
-    highlight['label'] = self.user_label(user_data, repo_name)
     highlight['content'] = self.user_content(user_data, repo_name)
-    highlight['why'] = self.user_why(user_data, repo_name)
+    highlight['occurred_at'] = Time.now.to_i
     highlight['upsert_key'] = Githubber.user_highlight_key(username)
     highlight
   end
