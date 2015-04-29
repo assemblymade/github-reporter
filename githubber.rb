@@ -58,9 +58,14 @@ class Githubber
     end
     results['changes_by_file'].sort_by{|a| -a['changes'] }
     results['commit_date'] = Time.iso8601(commit_data.commit.committer.date).to_i
-    results['preceding_sha'] = commit_data.parents[0].sha
+    if commit_data.parents[0].nil?
+      results['preceding_sha'] = nil
+    else
+      results['preceding_sha'] = commit_data.parents[0].sha
+    end
     results['sha'] = sha
     begin
+
       results['committer'] = commit_data['committer']['login']
     rescue
       puts "ERROR WITH COMMITTER #{sha}"
@@ -129,9 +134,13 @@ class Githubber
 
     while t < history_length_int
       sha = history['preceding_sha']
-      history = self.changes_one_commit(repo_name, owner, sha)
-      t = start_time - history['commit_date']
-      total_history << history
+      if sha.nil?
+        t=history_length_int
+      else
+        history = self.changes_one_commit(repo_name, owner, sha)
+        t = start_time - history['commit_date']
+        total_history << history
+      end
     end
     total_history
   end

@@ -10,7 +10,7 @@ class Main
   end
 
   def self.push_pr_highlights(owner, repo_name, time_length, org_slug)
-    prs = PR.pull_requests(owner, repo_name, time_limit=time_length)
+    prs = PR.pull_requests(owner, repo_name, 0, time_limit=time_length)
     prs_text = prs.map{|a| Text.pr_to_text(a) }
     prs_text.each do |pr|
       self.send_highlight(pr, org_slug)
@@ -43,7 +43,7 @@ class Main
     end
   end
 
-  def self.push_commits_highlights(owner, repo_name, time_length, top_n, org_slug)
+  def self.push_commits_highlights(owner, repo_name, time_length, top_n, org_slug, data)
     commits = data['commits']
     commits = commits.select{|a| a['message'][0,5] != "Merge" && !a['message'].nil? }.take(top_n)
     commits.each do |commit|
@@ -53,8 +53,8 @@ class Main
   end
 
   def self.push_all(owner, repo_name, time_length_days, org_slug)
-    data = Githubber.highlights(owner, repo_name, time_length)
     time_length = time_length_days * 86400
+    data = Githubber.highlights(owner, repo_name, time_length)
     #self.push_files_highlights(owner, repo_name, time_length, org_slug, data)
     #self.push_user_highlights(owner, repo_name, time_length, org_slug)
     self.push_pr_highlights(owner, repo_name, time_length, org_slug)

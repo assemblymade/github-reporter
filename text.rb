@@ -3,13 +3,13 @@ class Text
   require 'date'
 
   def self.pr_content(pr_data)
-    a="#{pr_data['title']}"
+    a="'#{pr_data['title']}'"
     if pr_data['state'] == "open"
-      a += " Open PR by #{pr_data['merger']}"
+      a += " is an Open PR by #{pr_data['merger']}"
     elsif pr_data.has_key?('merge_sha')
-      a += " Merged PR by #{pr_data['merger']}"
+      a += ", PR merged by #{pr_data['merger']}"
     else
-      a += " Closed PR by #{pr_data['merger']}"
+      a += ", PR closed by #{pr_data['merger']}"
     end
   end
 
@@ -20,12 +20,12 @@ class Text
   def self.pr_to_text(pr_data)
     highlight = {}
     highlight['content'] = self.pr_content(pr_data)
-    highlight['event_timestamp'] = self.pr_timestamp(pr_data)
+    highlight['occurred_at'] = self.pr_timestamp(pr_data)
     highlight['upsert_key'] = pr_data['key']
     highlight
   end
 
-  def self.commit_to_text(commit_data)
+  def self.commit_to_text(commit_data, owner, repo_name)
     if commit_data['commit_date']
       d = DateTime.strptime(commit_data['commit_date'].to_s,'%s').to_s
       d = DateTime.parse(d)
@@ -37,7 +37,11 @@ class Text
     if d
       a += " on #{d}"
     end
-    a
+    highlight = {}
+    highlight['content'] = a
+    highlight['occurred_at'] = commit_data['commit_date']
+    highlight['upsert_key'] = "GITHUB-COMMIT-#{commit_data['sha']}"
+    highlight
   end
 
   def self.file_content(file_data)
@@ -49,7 +53,7 @@ class Text
   def self.file_to_text(file_data, owner, repo_name)
     highlight = {}
     highlight['content'] = self.file_content(file_data)
-    highlight['event_timestamp'] = self.file_timestamp(file_data)
+    highlight['occurred_at'] = self.file_timestamp(file_data)
     highlight['upsert_key'] = self.file_to_key(file_data, owner, repo_name)
     highlight
   end

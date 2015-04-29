@@ -101,10 +101,12 @@ class PR
       end
     end
     r = []
+    prs
 
     prs.each do |pr|
       r << self.format_pr(user, repo_name, pr)
     end
+
     if standard_deviations
       self.filter_prs(r, standard_deviations)
     else
