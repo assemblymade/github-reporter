@@ -10,7 +10,7 @@ class Main
   end
 
   def self.push_pr_highlights(owner, repo_name, time_length, org_slug)
-    prs = PR.pull_requests(owner, repo_name, 0, time_limit=time_length)
+    prs = PR.pull_requests(owner, repo_name, -10, time_limit=time_length)
     prs_text = prs.map{|a| Text.pr_to_text(a) }
     prs_text.each do |pr|
       self.send_highlight(pr, org_slug)

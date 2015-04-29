@@ -34,9 +34,9 @@ class Text
       d=nil
     end
     a = "@#{commit_data['committer']} committed '#{commit_data['message']}' in #{repo_name}"
-    if d
-      a += "  #{d}"
-    end
+    # if d
+    #   a += "  #{d}"
+    # end
     highlight = {}
     highlight['content'] = a
     highlight['occurred_at'] = commit_data['commit_date']
