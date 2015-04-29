@@ -33,7 +33,7 @@ class Text
     else
       d=nil
     end
-    a = "#{commit_data['committer'].capitalize} committed '#{commit_data['message']}' in #{repo_name}"
+    a = "@#{commit_data['committer']} committed '#{commit_data['message']}' in #{repo_name}"
     if d
       a += "  #{d}"
     end
@@ -74,9 +74,9 @@ class Text
     username = user_data[0]
     files = user_data[1]['files'].sort_by{|e| s=0;e[1].each{|t| s=s+t[1]}; -s}
     if files.count > 2
-      a = "#{username.capitalize} changed #{files[0][0].split('/').last}, #{files[1][0].split('/').last}, and #{files.count-2} others"
+      a = "@#{username} changed #{files[0][0].split('/').last}, #{files[1][0].split('/').last}, and #{files.count-2} others"
     elsif files.count == 1
-      a = "#{username.capitalize} changed #{files[0][0].split('/').last}"
+      a = "@#{username} changed #{files[0][0].split('/').last}"
     end
     a
   end
