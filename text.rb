@@ -1,114 +1,55 @@
 class Text
   require_relative 'githubber'
-
-  def self.pr_label(pr_data)
-    pr_data['title']
-  end
+  require 'date'
 
   def self.pr_content(pr_data)
-    most_changed_files = self.get_most_changed_files_in_pr(pr_data).take(3)
-
-    a = "###{pr_data['title']}"
-    a += "\n#{pr_data['state']} pull request"
-    a += "\n###Top Changes"
-    most_changed_files.each do |f, g|
-      a += "\n     #{f} -- #{g}"
+    a="#{pr_data['title']}"
+    if pr_data['state'] == "open"
+      a += " Open PR by #{pr_data['merger']}"
+    elsif pr_data.has_key?('merge_sha')
+      a += " Merged PR by #{pr_data['merger']}"
+    else
+      a += " Closed PR by #{pr_data['merger']}"
     end
+  end
 
-    a += "\n###Commits"
-    pr_data['commit_messages'].each do |cm|
-      a += "\n#####[#{cm[0]}](#{cm[1]})"
-    end
-
-    a += "\n###Top Contributors"
-    pr_data['committers'].each do |k, v|
-      a += "\n     #{v.round(2)*100}%  #{k}"
-    end
-    a += "\n#####[Source Link](#{pr_data['html_url']})"
+  def self.pr_timestamp(pr_data)
+    pr_data['created_at']
   end
 
   def self.pr_to_text(pr_data)
     highlight = {}
-    highlight['label'] = self.pr_label(pr_data)
-
     highlight['content'] = self.pr_content(pr_data)
-
-    if pr_data['state'] == "open"
-      state = "Open"
-    else
-      state = "Closed"
-    end
-    highlight['why'] = "#{state} Github Pull Request with #{pr_data['files'].count} files changed"
-
+    highlight['event_timestamp'] = self.pr_timestamp(pr_data)
     highlight['upsert_key'] = pr_data['key']
-
     highlight
   end
 
-  def self.get_most_changed_files_in_pr(pr_data)
-    files = pr_data['files'].sort_by{|a, b| -b['changes']}
-
-    filenames = files.map{|a, b| a}.map{|a| a.split('/').last}
-
-    file_event_content = files.map do |a, b|
-      if b['additions'] > b['deletions'] * 2
-        event_text = "#{b['additions']} additions"
-      elsif b['deletions'] > b['additions'] * 2
-        event_text = "#{b['deletions']} deletions"
-      else
-        event_text = "#{b['deletions'] + b['additions']} changes"
-      end
-      event_text
+  def self.commit_to_text(commit_data)
+    if commit_data['commit_date']
+      d = DateTime.strptime(commit_data['commit_date'].to_s,'%s').to_s
+      d = DateTime.parse(d)
+      d = d.strftime('%b %d %Y')
+    else
+      d=nil
     end
-
-    events = []
-    (0..filenames.count-1).each do |a|
-      events << [filenames[a], file_event_content[a]]
+    a = "#{commit_data['message']} committed by #{commit_data['committer']}"
+    if d
+      a += " on #{d}"
     end
-    events.to_h
-  end
-
-  def self.commits_to_text(commit_data)
+    a
   end
 
   def self.file_content(file_data)
-    filename = file_data[0].split('/').last
-    filepath = file_data[0]
-    a = "###{filename}"
-    a += "\n#{filepath}"
+  end
 
-    a += "\n####Commits"
-    commits = file_data[1]['commits'].sort_by{|k, v| -v[0]}
-    commits.each do |c, d|
-      commit_message = d[2].gsub("\"", "")
-      a += "\n      #{commit_message}:  #{d[0]} changes by #{d[1]}"
-    end
-
-    a += "\n\n####Contributions by"
-    file_data[1]['committers'].each do |q|
-      committer_name = q[0]
-      additions_count = (file_data[1]['additions'] * q[1]).to_i
-      deletions_count = (file_data[1]['deletions'] * q[1]).to_i
-      percent = (q[1].round(2)*100).to_s
-      a += "\n - ######{committer_name}"
-      a += "\n     #{additions_count} additions, #{deletions_count} deletions, #{percent}% of total"
-    end
-    a += "\n\n"
-    a
+  def self.file_timestamp(file_data)
   end
 
   def self.file_to_text(file_data, owner, repo_name)
     highlight = {}
-    file_link = file_data[0]
-    file_name = file_data[0]#.split('/').last
-
-    top_committer = file_data[1]['committers'].sort_by{|a, b| -b}[0][0]
-    committers_n = file_data[1]['committers'].count
-    and_others_text = committers_n > 1 ? " and #{committers_n - 1} others" : ""
-
-    highlight['label'] = "#{file_name} (#{file_data[1]['changes']}) changes in #{repo_name} by #{top_committer}#{and_others_text}"
     highlight['content'] = self.file_content(file_data)
-    highlight['why'] = "#{file_name} changed on Github"
+    highlight['event_timestamp'] = self.file_timestamp(file_data)
     highlight['upsert_key'] = self.file_to_key(file_data, owner, repo_name)
     highlight
   end
