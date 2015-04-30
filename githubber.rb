@@ -360,7 +360,7 @@ class Githubber
     n=0
     r=[]
     p = 1.5
-    users_data.each do |a|
+    commits_data.each do |a|
       m = p ** (-1 * n)
       r << [a['sha'], m.to_f]
       n += 1
