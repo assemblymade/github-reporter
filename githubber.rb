@@ -312,26 +312,29 @@ class Githubber
     history.each do |a|
       sha = a['sha']
       user = a['committer']
-      changes = a['total_changes']
-      filechanges = a['changes_by_file']
-      if users.include?(user)
-        users[user]['total'] = users[user]['total'] + changes
-        users[user]['commits'] << sha
-      else
-        users[user] = {}
-        users[user]['total'] = changes
-        users[user]['files'] = {}
-        users[user]['commits'] = [sha]
-      end
-
-      filechanges.each do |q|
-        filename = q['filename']
-        changes = q['changes']
-        if users[user].include?(filename)
-          users[user]['files'][filename] << [sha, changes, a['message'], a['committer']]
+      message = a['message']
+      if message[0,5] != "Merge"
+        changes = a['total_changes']
+        filechanges = a['changes_by_file']
+        if users.include?(user)
+          users[user]['total'] = users[user]['total'] + changes
+          users[user]['commits'] << sha
         else
-          users[user]['files'][filename] = []
-          users[user]['files'][filename] << [sha, changes, a['message'], a['committer']]
+          users[user] = {}
+          users[user]['total'] = changes
+          users[user]['files'] = {}
+          users[user]['commits'] = [sha]
+        end
+
+        filechanges.each do |q|
+          filename = q['filename']
+          changes = q['changes']
+          if users[user].include?(filename)
+            users[user]['files'][filename] << [sha, changes, a['message'], a['committer']]
+          else
+            users[user]['files'][filename] = []
+            users[user]['files'][filename] << [sha, changes, a['message'], a['committer']]
+          end
         end
       end
     end
