@@ -21,6 +21,7 @@ class Text
     highlight = {}
     highlight['content'] = self.pr_content(pr_data)
     highlight['occurred_at'] = self.pr_timestamp(pr_data)
+    highlight['occurred_at'] = Time.at(highlight['occurred_at']).iso8601
     highlight['upsert_key'] = pr_data['key']
     highlight
   end
@@ -39,7 +40,9 @@ class Text
     # end
     highlight = {}
     highlight['content'] = a
+
     highlight['occurred_at'] = commit_data['commit_date']
+    highlight['occurred_at'] = Time.at(highlight['occurred_at']).iso8601
     highlight['upsert_key'] = "GITHUB-COMMIT-#{commit_data['sha']}"
     highlight
   end
@@ -85,7 +88,7 @@ class Text
     username = user_data[0]
     highlight = {}
     highlight['content'] = self.user_content(user_data, repo_name)
-    highlight['occurred_at'] = Time.now.to_i
+    highlight['occurred_at'] = Time.parse(Time.now.to_s).iso8601
     highlight['upsert_key'] = Githubber.user_highlight_key(username)
     highlight
   end
