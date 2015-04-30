@@ -344,6 +344,42 @@ class Githubber
     users.to_a.sort_by{|q| -q[1]['total']}
   end
 
+  def self.compute_user_scores(users_data)
+    n=0
+    r=[]
+    p = 1.5
+    users_data.each do |a|
+      m = p ** (-1 * n)
+      r << [a[0], m.to_f]
+      n += 1
+    end
+    r.to_h
+  end
+
+  def self.commit_scores(commits_data)
+    n=0
+    r=[]
+    p = 1.5
+    users_data.each do |a|
+      m = p ** (-1 * n)
+      r << [a['sha'], m.to_f]
+      n += 1
+    end
+    r.to_h
+  end
+
+  def self.pr_scores(pr_data)
+    n=0
+    r=[]
+    p = 1.5
+    pr_data.each do |a|
+      m = p ** (-1 * n)
+      r << [a['title'], m.to_f]
+      n += 1
+    end
+    r.to_h
+  end
+
   def self.all_history(user, repo_name, history_length)
     history = self.commit_history(history_length, repo_name, user)
     history['comments'] = self.list_comments(user, repo_name)

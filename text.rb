@@ -23,12 +23,14 @@ class Text
     highlight = {}
     highlight['content'] = self.pr_content(pr_data)
     highlight['occurred_at'] = self.pr_timestamp(pr_data)
+    highlight['type'] = "pr"
+    highlight['score'] =
     highlight['occurred_at'] = Time.at(highlight['occurred_at']).iso8601
     highlight['upsert_key'] = pr_data['key']
     highlight
   end
 
-  def self.commit_to_text(commit_data, owner, repo_name)
+  def self.commit_to_text(commit_data, owner, repo_name, commit_score)
     if commit_data['commit_date']
       d = DateTime.strptime(commit_data['commit_date'].to_s,'%s').to_s
       d = DateTime.parse(d)
@@ -42,7 +44,8 @@ class Text
     # end
     highlight = {}
     highlight['content'] = a
-
+    highlight['type'] = "commit"
+    highlight['score'] = commit_score
     highlight['occurred_at'] = commit_data['commit_date']
     highlight['occurred_at'] = Time.at(highlight['occurred_at']).iso8601
     highlight['upsert_key'] = "GITHUB-COMMIT-#{commit_data['sha']}"
@@ -88,11 +91,13 @@ class Text
     a
   end
 
-  def self.user_to_text(user_data, repo_name)
+  def self.user_to_text(user_data, repo_name, user_scores)
     username = user_data[0]
     highlight = {}
     highlight['content'] = self.user_content(user_data, repo_name)
     highlight['occurred_at'] = nil
+    highlight['type'] = "user commits"
+    highlight['score'] = user_scores[username]
     highlight['upsert_key'] = Githubber.user_highlight_key(username)
     highlight
   end
