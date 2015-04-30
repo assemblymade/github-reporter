@@ -3,14 +3,16 @@ class Text
   require 'date'
 
   def self.pr_content(pr_data)
-    a="'#{pr_data['title']}'"
+    a = "@#{pr_data['merger']} "
     if pr_data['state'] == "open"
-      a += " is an Open PR by #{pr_data['merger']}"
+      a += " opened"
     elsif pr_data.has_key?('merge_sha')
-      a += ", PR merged by #{pr_data['merger']}"
+      a += " merged"
     else
-      a += ", PR closed by #{pr_data['merger']}"
+      a += " closed"
     end
+    a += " PR: #{pr_data['title']}"
+    a
   end
 
   def self.pr_timestamp(pr_data)
@@ -76,8 +78,10 @@ class Text
   def self.user_content(user_data, repo_name)
     username = user_data[0]
     files = user_data[1]['files'].sort_by{|e| s=0;e[1].each{|t| s=s+t[1]}; -s}
-    if files.count > 2
-      a = "@#{username} changed #{files[0][0].split('/').last}, #{files[1][0].split('/').last}, and #{files.count-2} others"
+    if files.count == 2
+      a = "@#{username} changed #{files[0][0].split('/').last}, #{files[1][0].split('/').last}, and #{files.count-2} other file"
+    elsif files.count > 2
+      a = "@#{username} changed #{files[0][0].split('/').last}, #{files[1][0].split('/').last}, and #{files.count-2} other files"
     elsif files.count == 1
       a = "@#{username} changed #{files[0][0].split('/').last}"
     end
