@@ -92,7 +92,7 @@ class Text
     username = user_data[0]
     highlight = {}
     highlight['content'] = self.user_content(user_data, repo_name)
-    highlight['occurred_at'] = Time.parse(Time.now.to_s).iso8601
+    highlight['occurred_at'] = nil
     highlight['upsert_key'] = Githubber.user_highlight_key(username)
     highlight
   end
