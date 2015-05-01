@@ -24,12 +24,14 @@ class Activity
     highlight['occurred_at'] = event_data['created_at']
     if event_data['category'] == "PushEvent"
       highlight = self.push_event_to_text(event_data, highlight)
-    elsif event_data['category'] == "IssueCommentEvent" or event_data['type'] == "PullRequestReviewCommentEvent"
+    elsif event_data['category'] == "IssueCommentEvent" or event_data['category'] == "PullRequestReviewCommentEvent"
       highlight = self.issue_comment_event_to_text(event_data, highlight)
     elsif event_data['category'] == "ForkEvent"
       highlight = self.fork_event_to_text(event_data, highlight)
     elsif event_data['category'] == "WatchEvent"
       highlight = self.watch_event_to_text(event_data, highlight)
+    elsif event_data['category'] == "MemberEvent"
+      highlight = self.member_event_to_text(event_data, highlight)
     end
     highlight
   end
@@ -90,7 +92,31 @@ class Activity
     highlight['content'] = "#{forker.capitalize} forked #{repo}"
     highlight['category'] = 'github ForkEvent'
     highlight['score'] = 1.0
-    highlight['label'] =
+    highlight['label'] = "#{repo} forked!"
+    highlight
+  end
+
+  def self.member_event_to_text(event_data, highlight)
+    if event_data['action'] == "added"
+      repo_name = event_data['repository']['name']
+      user = event_data['member']['login']
+      highlight['upsert_key'] = "GH-#{}"
+      highlight['actors'] = [user]
+      highlight['content'] = "#{user} is now a collaborator on #{repo_name}"
+      highlight['category'] = "github NewMember"
+      highlight['score'] = 0.8
+      highlight['label'] = "New Collaborator on #{repo_name}"
+      highlight
+    end
+  end
+
+  def self.pr_event_to_text(event_data, highlight)
+    highlight['upsert_key'] = "GH-"
+    highlight['actors'] = []
+    highlight['content'] = ""
+    highlight['category'] = "github PushEvent"
+    highlight['score'] = 1.0
+    highlight['label'] = ""
     highlight
   end
 end
