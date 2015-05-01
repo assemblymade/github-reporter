@@ -34,11 +34,24 @@ class Activity
     highlight
   end
 
+  def self.pr_comment_event_to_text(event_data, highlight)
+    if event_data['action'] == "created"
+      commenter = event_data['sender']['login']
+      highlight['label'] = "#{commenter} commented on a PR in #{event_data['repo']['name']}"
+      highlight['score'] = 0.6
+      highlight['content'] = "#{event_data['comment']['body']}"
+      highlight['category'] = "github PRcomment"
+      highlight['actors'] = [commenter]
+      highlight['upsert_key'] = "GH-COMMENT-PR-#{event_data['created_at']}-#{event_data['repo']['name']}"
+    end
+  end
+
   def self.issue_comment_event_to_text(event_data, highlight)
     commenter = event_data['actor']['login']
     comment = event_data['payload']['comment']['body']
+    highlight['label'] = "#{commenter} commented on #{event_data['repo']['name']}"
     highlight['score'] = 0.7
-    highlight['content'] = "#{commenter} commented '#{comment}' on #{event_data['repo']['name']}"
+    highlight['content'] = comment
     highlight['category'] = "github CommentEvent"
     highlight['actors'] = [commenter]
     highlight['upsert_key'] = "GH-COMMENT-#{event_data['created_at']}-#{event_data['repo']}"
@@ -47,8 +60,9 @@ class Activity
 
   def self.push_event_to_text(event_data, highlight)
     pusher = event_data['actor']['login']
+    highlight['label'] = "#{pusher} pushed directly to #{event_data['repo']['name']}"
     highlight['score'] = 0.8
-    highlight['content'] = "#{pusher} pushed directly to #{event_data['repo']['name']}"
+    highlight['content'] = "#{event_data['commits'].last['message']}"
     highlight['category'] = "github PushEvent"
     highlight['upsert_key'] = "GH-PUSH-#{event_data['payload']['head']}"
     highlight['actors'] = [pusher]
@@ -60,9 +74,10 @@ class Activity
       watcher = event_data['actor']['login']
       highlight['upsert_key'] = "GH-WATCH-#{watcher}-#{event_data['repo']}"
       highlight['actors'] = [watcher]
-      highlight['content'] = "#{watcher} is watching the #{event_data['repo']} repo"
+      highlight['content'] = "#{watcher} started watching the #{event_data['repository']['name']} repo"
       highlight['category'] = "github WatchEvent"
       highlight['score'] = 0.2
+      highlight['label'] = "More people following #{event_data['repo']}"
       highlight
     end
   end
@@ -75,7 +90,7 @@ class Activity
     highlight['content'] = "#{forker.capitalize} forked #{repo}"
     highlight['category'] = 'github ForkEvent'
     highlight['score'] = 1.0
+    highlight['label'] =
     highlight
   end
-
 end
