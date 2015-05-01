@@ -28,7 +28,7 @@ class Text
     highlight['score'] = 1.0
     highlight['occurred_at'] = Time.at(highlight['occurred_at']).iso8601
     highlight['upsert_key'] = pr_data['key']
-    highlight['actors'] = []
+    highlight['actors'] = pr_data['committers'].keys()
     highlight
   end
 
@@ -44,8 +44,9 @@ class Text
     highlight = {}
     highlight['content'] = a
     highlight['label'] = "#{commit_data['committer']} committed on #{repo_name}"
-    highlight['category'] = "commit"
+    highlight['category'] = "github commit"
     highlight['score'] = commit_score
+    highlight['actors'] = [commit_data['committer']]
     highlight['occurred_at'] = commit_data['commit_date']
     highlight['occurred_at'] = Time.at(highlight['occurred_at']).iso8601
     highlight['upsert_key'] = "GITHUB-COMMIT-#{commit_data['sha']}"
@@ -99,6 +100,7 @@ class Text
     highlight['occurred_at'] = nil
     highlight['label'] = "#{user_data[0]}'s Github activity'"
     highlight['category'] = "user commits"
+    highlight['actors'] = [username]
     highlight['score'] = user_scores[username]
     highlight['upsert_key'] = Githubber.user_highlight_key(username)
     highlight
