@@ -3,7 +3,7 @@ class Text
   require 'date'
 
   def self.pr_content(pr_data)
-    a = "@#{pr_data['merger']} "
+    a = "#{pr_data['merger']} "
     if pr_data['state'] == "open"
       a += " opened"
     elsif pr_data.has_key?('merge_sha')
@@ -23,10 +23,11 @@ class Text
     highlight = {}
     highlight['content'] = self.pr_content(pr_data)
     highlight['occurred_at'] = self.pr_timestamp(pr_data)
-    highlight['type'] = "pr"
+    highlight['category'] = "pr"
     highlight['score'] =
     highlight['occurred_at'] = Time.at(highlight['occurred_at']).iso8601
     highlight['upsert_key'] = pr_data['key']
+    highlight['actors'] = 
     highlight
   end
 
@@ -38,13 +39,10 @@ class Text
     else
       d=nil
     end
-    a = "@#{commit_data['committer']} committed '#{commit_data['message']}' in #{repo_name}"
-    # if d
-    #   a += "  #{d}"
-    # end
+    a = "#{commit_data['committer']} committed '#{commit_data['message']}' in #{repo_name}"
     highlight = {}
     highlight['content'] = a
-    highlight['type'] = "commit"
+    highlight['category'] = "commit"
     highlight['score'] = commit_score
     highlight['occurred_at'] = commit_data['commit_date']
     highlight['occurred_at'] = Time.at(highlight['occurred_at']).iso8601
@@ -82,11 +80,11 @@ class Text
     username = user_data[0]
     files = user_data[1]['files'].sort_by{|e| s=0;e[1].each{|t| s=s+t[1]}; -s}
     if files.count == 2
-      a = "@#{username} changed #{files[0][0].split('/').last}, #{files[1][0].split('/').last}, and #{files.count-2} other file"
-    elsif files.count > 2
-      a = "@#{username} changed #{files[0][0].split('/').last}, #{files[1][0].split('/').last}, and #{files.count-2} other files"
+      a = "#{username} changed #{files[0][0].split('/').last}, #{files[1][0].split('/').last}, and #{files.count-2} other file"
+    elsif files.count == 2
+      a = "#{username} changed #{files[0][0].split('/').last}, #{files[1][0].split('/').last}, and #{files.count-2} other files"
     elsif files.count == 1
-      a = "@#{username} changed #{files[0][0].split('/').last}"
+      a = "#{username} changed #{files[0][0].split('/').last}"
     end
     a
   end
@@ -96,7 +94,7 @@ class Text
     highlight = {}
     highlight['content'] = self.user_content(user_data, repo_name)
     highlight['occurred_at'] = nil
-    highlight['type'] = "user commits"
+    highlight['category'] = "user commits"
     highlight['score'] = user_scores[username]
     highlight['upsert_key'] = Githubber.user_highlight_key(username)
     highlight

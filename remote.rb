@@ -25,9 +25,4 @@ class Remote
 
     return res
   end
-
-
-
-
-
 end
