@@ -24,8 +24,8 @@ class Remote
   def self.plain_post(url, data)
     data = data.to_json
     uri = URI(url)
-    https = Net::HTTP.new(uri.host,uri.port)
-    https.use_ssl = false
+    https = Net::HTTP.new(uri.host, uri.port)
+    https.use_ssl = true
     req = Net::HTTP::Post.new(uri.path, initheader = {'Content-Type' =>'application/json'})
     req.body = data
     res = https.request(req)
