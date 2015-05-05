@@ -8,4 +8,4 @@ deploy:
   app: githubreporter
   on:
     repo: assemblymade/github-reporter
-  run: "rake main:rebuild"
+  run: "rake github_main:rebuild"

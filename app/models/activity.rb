@@ -11,7 +11,7 @@ class Activity
       events.each do |event|
         text = self.event_to_text(event)
         if text.has_key?('content')
-          Main.send_highlight(text, org_slug)
+          GithubMain.send_highlight(text, org_slug)
         end
       end
     rescue
