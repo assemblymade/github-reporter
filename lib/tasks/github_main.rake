@@ -14,6 +14,7 @@ namespace :github_main do
       GithubMain.push_all('assemblymade', r, time_length, 'assembly')
     end
 
+    GithubMain.push_all('assemblymade', 'coderwall', 0.1, 'coderwall')
     GithubMain.push_all('bitcoin', 'bitcoin', time_length, 'bitcoin')
     GithubMain.push_all('rails', 'rails', time_length, 'rails')
 
@@ -38,6 +39,7 @@ namespace :github_main do
     repos.each do |r|
       GithubMain.push_all('assemblymade', r, time_length, 'assembly')
     end
+    GithubMain.push_all('assemblymade', 'coderwall', 0.1, 'coderwall')
   end
 
 end
