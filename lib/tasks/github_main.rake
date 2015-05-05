@@ -15,8 +15,8 @@ namespace :github_main do
     end
 
     GithubMain.push_all('assemblymade', 'coderwall', 0.1, 'coderwall')
-    GithubMain.push_all('bitcoin', 'bitcoin', time_length, 'bitcoin')
-    GithubMain.push_all('rails', 'rails', time_length, 'rails')
+  #  GithubMain.push_all('bitcoin', 'bitcoin', time_length, 'bitcoin')
+#    GithubMain.push_all('rails', 'rails', time_length, 'rails')
 
   end
 
