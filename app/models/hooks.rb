@@ -13,14 +13,3 @@ class Hooks
     Remote.plain_post(url, data)
   end
 end
-
-
-
-post "/repos/#{repo}/hooks",
-    name: "web",
-    active: "true",
-    events: %w(push pull_request pull_request_review_comment issue_comment),
-    config: {
-      url: 'https://assembly.com/webhooks/github',
-      content_type: 'json'
-    }
