@@ -1,0 +1,11 @@
+language: ruby
+rvm:
+- 2.1.5
+deploy:
+  provider: heroku
+  api_key:
+    secure: XoApdtI7E0v+ZQDHdfdQeGughnvgbegZuuXkHE7fo0H2DDHxL7L5zAKVt2b09snt6sHDojoymCJndY/W/sSZQHxGj+CfFD114Fhcm+uniVhwcrnulauG2Ty28HL9FXVRdHqbx4jFGVXNZBrIEUMtbIhyh6A+DGx6GDbF80iqUfY=
+  app: githubreporter
+  on:
+    repo: assemblymade/github-reporter
+  run: "rake main:rebuild"
