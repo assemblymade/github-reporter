@@ -82,7 +82,7 @@ class Text
     files = user_data[1]['files'].sort_by{|e| s=0;e[1].each{|t| s=s+t[1]}; -s}
     if files.count >= 3
       a = "Changes to  #{files[0][0].split('/').last}, #{files[1][0].split('/').last}, and #{files.count-3} other files"
-    elsif files.count >= 2
+    elsif files.count > 2
       a = "Changes to #{files[0][0].split('/').last}, #{files[1][0].split('/').last}, and #{files.count-2} other file"
     # elsif files.count == 1
     #   a = "Changes to #{files[0][0].split('/').last}"
