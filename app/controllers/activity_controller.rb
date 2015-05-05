@@ -1,6 +1,6 @@
-class ActivityController < ApplicationController::Base
+class ActivityController < ApplicationController
   respond_to :json
-  
+
   def index
     puts "RECEIVED MESSAGE"
     puts params
