@@ -3,12 +3,10 @@ class ActivityController < ApplicationController
 
   def index
     puts "RECEIVED MESSAGE"
-    puts params
+    puts params.keys()
 
     if params.has_key?("comment")
-      puts "KEYS"
-      puts params.keys
-      puts ""
+      
       name = params['comment']['repository']['name']
       owner = params['comment']['repository']['owner']['login']
       changelog = Repo.changelog_from_repo(owner, name)
