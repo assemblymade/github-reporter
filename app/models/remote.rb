@@ -21,12 +21,15 @@ class Remote
     return res
   end
 
-  def self.plain_post(url, data)
+  def self.plain_post(url, data, username=nil, password=nil)
     data = data.to_json
     uri = URI(url)
     https = Net::HTTP.new(uri.host, uri.port)
     https.use_ssl = true
     req = Net::HTTP::Post.new(uri.path, initheader = {'Content-Type' =>'application/json'})
+    if username
+      req.basic_auth(username, password)
+    end
     req.body = data
     res = https.request(req)
     puts "Response #{res.code} #{res.message}: #{res.body}"
