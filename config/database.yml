@@ -22,4 +22,5 @@ test:
 
 production:
   <<: *default
-  database: ENV['DATABASE_URL']
+  database: github_reporter_prod
+  url: <%= ENV["DATABASE_URL"] %>
