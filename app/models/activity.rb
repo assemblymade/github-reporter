@@ -24,7 +24,7 @@ class Activity
     highlight['occurred_at'] = event_data['created_at']
     #if event_data['type'] == "PushEvent"
     #  highlight = self.push_event_to_text(event_data, highlight)
-    if event_data['type'] == "IssueCommentEvent" or event_data['type'] == "PullRequestReviewCommentEvent"
+    if event_data['type'] == "IssueCommentEvent" or event_data['type'] == "PullRequestReviewCommentEvent" or event_data['type'] == "CommitCommentEvent"
       highlight = self.issue_comment_event_to_text(event_data, highlight)
     elsif event_data['type'] == "ForkEvent"
       highlight = self.fork_event_to_text(event_data, highlight)

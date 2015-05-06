@@ -50,6 +50,21 @@ class Text
     highlight
   end
 
+  def self.activity_comment_to_text(comment)
+    if comment['action'] == "created"
+      highlight = {}
+      highlight['content'] = a
+      highlight['label'] = "@#{commit_data['committer']} committed on #{repo_name}"
+      highlight['category'] = "github commit"
+      highlight['score'] = commit_score
+      highlight['actors'] = [commit_data['committer']]
+      highlight['occurred_at'] = commit_data['commit_date']
+      highlight['occurred_at'] = Time.at(highlight['occurred_at']).iso8601
+      highlight['upsert_key'] = "GITHUB-COMMIT-#{commit_data['sha']}"
+      highlight
+    end
+  end
+
   def self.file_content(file_data)
   end
 
