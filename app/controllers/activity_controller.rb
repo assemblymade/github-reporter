@@ -9,12 +9,11 @@ class ActivityController < ApplicationController
       name = params['comment']['repository']['name']
       owner = params['comment']['repository']['owner']['login']
       changelog = Repo.changelog_from_repo(owner, name)
-      text_package = Text.
-
+      t = {}
+      
+      t['']
       #GithubMain.send_highlight(text_package, changelog)
     end
-
-
     render json: {}
   end
 
