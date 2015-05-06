@@ -22,4 +22,4 @@ test:
 
 production:
   <<: *default
-  database: github_reporter_prod
+  database: ENV['DATABASE_URL']
