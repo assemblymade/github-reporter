@@ -63,8 +63,8 @@ class GithubMain
     time_length = time_length_days * 86400
     data = Githubber.highlights(owner, repo_name, time_length)
     #self.push_files_highlights(owner, repo_name, time_length, org_slug, data)
-    self.push_user_highlights(owner, repo_name, time_length, org_slug, data['commits'])
-  #  self.push_pr_highlights(owner, repo_name, time_length, org_slug)   #TAKEN OVER BY ACTIVITY
+    #self.push_user_highlights(owner, repo_name, time_length, org_slug, data['commits'])
+   # self.push_pr_highlights(owner, repo_name, time_length, org_slug)   #TAKEN OVER BY ACTIVITY
     self.push_commits_highlights(owner, repo_name, time_length, 999, org_slug, data)
     Activity.public_events(owner, repo_name, org_slug)
   end
