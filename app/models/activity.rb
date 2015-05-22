@@ -22,15 +22,14 @@ class Activity
   def self.event_to_text(event_data)
     highlight = {}
     highlight['occurred_at'] = event_data['created_at']
-    #if event_data['type'] == "PushEvent"
-    #  highlight = self.push_event_to_text(event_data, highlight)
-    if event_data['type'] == "IssueCommentEvent" or event_data['type'] == "PullRequestReviewCommentEvent" or event_data['type'] == "CommitCommentEvent"
+    case event_data['type']
+    when "IssueCommentEvent", "PullRequestReviewCommentEvent", "CommitCommentEvent"
       highlight = self.issue_comment_event_to_text(event_data, highlight)
-    elsif event_data['type'] == "ForkEvent"
+    when "ForkEvent"
       highlight = self.fork_event_to_text(event_data, highlight)
-    elsif event_data['type'] == "WatchEvent"
+    when "WatchEvent"
       highlight = self.watch_event_to_text(event_data, highlight)
-    elsif event_data['type'] == "PullRequestEvent"
+    when "PullRequestEvent"
       highlight = self.pr_event_to_text(event_data, highlight)
     end
     highlight
